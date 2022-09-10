@@ -10,7 +10,7 @@
 
 body {
     display: grid;
-    grid-template-rows: 100px 1fr;
+    grid-template-rows: 100px 100px 1fr;
     justify-content: center;
     text-align: center;
     align-items: center;
@@ -19,13 +19,27 @@ body {
     font-family: 'Nunito', sans-serif;
 }
 
+/* Score board */
+.score-board {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.score {
+    align-self: center;
+    font-size: 24px;
+}
+
+.score-board img {
+    width: 48px;
+}
+
+/* Board */
 .board {
-    width: 600px;
-    height: 600px;
     background-color: var(--board-background);
     display: grid;
-    grid-template-columns: repeat(3, 200px);
-    grid-template-rows: repeat(3, 200px);
+    grid-template-columns: repeat(3, 150px);
+    grid-template-rows: repeat(3, 150px);
     gap: 10px;
 }
 
