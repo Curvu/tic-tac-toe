@@ -16,6 +16,7 @@ body {
     align-items: center;
     height: 100vh;
     background-color: var(--main-background);
+    font-family: 'Nunito', sans-serif;
 }
 
 .board {
@@ -37,7 +38,7 @@ body {
     font-size: 96px;
     color: var(--board-background);
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    user-select: none;
 }
 
 .win-line {
