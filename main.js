@@ -1,6 +1,12 @@
 const cells = document.querySelectorAll('.cell')
 const playerScore = document.getElementById('player-score')
 const botScore = document.getElementById('bot-score')
+const historyCont = document.getElementById('history')
+const clearBtn = document.querySelector('.button')
+
+let history = JSON.parse(localStorage.getItem('history')) || []
+
+// TODO: Only add win/loose when someone wins 5 times
 
 let BoardState = function() {
     this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -55,6 +61,20 @@ const resetGame = () => {
     bot.reset()
 }
 
+const addHistory = (game) => {
+    history.push(game)
+    localStorage.setItem('history', JSON.stringify(history))
+    renderHistory()
+}
+
+const renderHistory = () => {
+    historyCont.innerHTML = ''
+    history.forEach(element => {
+        historyCont.innerHTML += `<li>${element}</li>`
+        console.log(element)
+    })
+}
+
 cells.forEach(cell => {
     cell.addEventListener('click', e => {
         let index = parseInt(e.currentTarget.id.replace('cell-', ''))
@@ -68,14 +88,15 @@ cells.forEach(cell => {
                 player.addPoint()
                 console.log('player points: ', player.getPoints())
                 playerScore.textContent = player.getPoints()
-                // Reset things
+
+                addHistory('Win')
                 resetGame()
                 return
             }
 
-            // Bot play
             if (board.checkBoard()) { // If the board is not full...
-                while (board.getBoard()[index]) index = generatePlay()
+                // Bot play
+                while (board.getBoard()[index]) index = generatePlay() // generate a unplayed position
     
                 bot.playRound(index)
                 board.setBoard(index)
@@ -86,12 +107,28 @@ cells.forEach(cell => {
                     console.log('bot points: ', bot.getPoints())
                     botScore.textContent = bot.getPoints()
 
+                    addHistory('Loose')
+
                     resetGame()
                     return
                 }
             } else {
-                console.log('draw')
+                // Draw
+                addHistory('Draw')
+
+                resetGame()
+                return
             }
         }
     })
+})
+
+// Game History
+
+window.addEventListener('DOMContentLoaded', () => {
+    renderHistory()
+})
+
+clearBtn.addEventListener('click', () => {
+    localStorage.setItem('history', JSON.stringify([]))
 })
