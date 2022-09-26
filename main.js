@@ -6,8 +6,6 @@ const clearBtn = document.querySelector('.button')
 
 let history = JSON.parse(localStorage.getItem('history')) || []
 
-// TODO: Only add win/loose when someone wins 5 times
-
 let BoardState = function() {
     this.board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -25,6 +23,9 @@ const Player = function() {
     
     const getPoints = () => this.points
     const addPoint = () => this.points++
+    const resetPoints = () => {
+        this.points = 0;
+    }
     
     const playRound = (p) => { this.plays[p] = 1 }
     const reset = () => { this.plays = [0, 0, 0, 0, 0, 0, 0, 0, 0] }
@@ -42,7 +43,9 @@ const Player = function() {
         return false
     }
     
-    return {getPoints, addPoint, playRound, reset, getPlay, checkWin}
+    const winGame = () => this.points === 5
+
+    return {getPoints, addPoint, resetPoints, playRound, reset, getPlay, checkWin, winGame}
 }
 
 const board = BoardState()
@@ -50,15 +53,20 @@ const board = BoardState()
 const player = new Player()
 const bot = new Player()
 
-const generatePlay = () => {
-    return Math.floor(9 * Math.random())
-}
+const generatePlay = () => Math.floor(9 * Math.random())
 
 const resetGame = () => {
     cells.forEach(cell => {cell.textContent = ''})
     board.reset()
     player.reset()
     bot.reset()
+}
+
+const totalReset = () => {
+    player.resetPoints()
+    playerScore.textContent = player.getPoints()
+    bot.resetPoints()
+    botScore.textContent = bot.getPoints()
 }
 
 const addHistory = (game) => {
@@ -89,7 +97,11 @@ cells.forEach(cell => {
                 console.log('player points: ', player.getPoints())
                 playerScore.textContent = player.getPoints()
 
-                addHistory('Win')
+                
+                if(player.winGame()) {
+                    addHistory('Win')
+                    totalReset()
+                }
                 resetGame()
                 return
             }
@@ -107,15 +119,14 @@ cells.forEach(cell => {
                     console.log('bot points: ', bot.getPoints())
                     botScore.textContent = bot.getPoints()
 
-                    addHistory('Loose')
-
+                    if(bot.winGame()) {
+                        addHistory('Loose')
+                        totalReset()
+                    }
                     resetGame()
                     return
                 }
             } else {
-                // Draw
-                addHistory('Draw')
-
                 resetGame()
                 return
             }
@@ -130,5 +141,7 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 clearBtn.addEventListener('click', () => {
-    localStorage.setItem('history', JSON.stringify([]))
+    history = []
+    localStorage.setItem('history', JSON.stringify(history))
+    renderHistory()
 })
